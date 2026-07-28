@@ -6,46 +6,54 @@
 
 ---
 
-## 1. 公式LINE「BOOSTER！応援共創ラボ」のリッチメニュー
+## 1. 公式LINE「BOOSTER！応援共創ラボ」のリッチメニュー ← 2026-07-28 設定済み
 
-対象ボタンのアクションを「リンク（URL）」にして、以下を設定する。
+UTAGE アカウント `vGr95bNjxbaq`（BOOSTER！応援共創ラボ）＞ LINE リッチメニュー
 
-```
-https://uyaisin.github.io/booster-calendar/
-```
+| 項目 | 内容 |
+|---|---|
+| 管理名 | BOOSTER 3ボタン（FB／会員サイト／イベントスケジュール） |
+| token | `oA9OPdPFWsZ7` |
+| 状態 | **デフォルト**（2026-07-28に2ボタン版から切替） |
+| 画像 | `richmenu-booster-2500x843.jpg`（2500×843／428KB／JPG） |
+| レイアウト | レイアウト1（2行×3列＝6エリア） |
+| 開閉ボタン文言 | `FB・会員サイト・予定`（**14文字以内が上限**。超えると保存でエラー） |
 
-- ボタンのラベル例: 「イベント予定」「開催スケジュール」
-- LINE内蔵ブラウザで開かれた場合は、ページ上部に「ブラウザで開いてください」の案内が自動表示される（それ以外の環境では非表示）
+エリア割り当て（列ごとに同じURLを2つ入れて、ボタン全体をタップ可能にしている）:
 
-## 2. 会員サイト《 BOOSTER！応援共創ラボ 》
+| エリア | URL |
+|---|---|
+| 1・4（左＝専用Facebookグループ） | `https://www.facebook.com/groups/900730145498503` |
+| 2・5（中＝会員サイト） | `https://info.ooen-booster.com/members/94TOLagXD3lw/login` |
+| 3・6（右＝イベントスケジュール） | `https://uyaisin.github.io/booster-calendar/` |
 
-### 方式A（推奨）: ページごと埋め込む
+- 旧「BOOSTER 2ボタン（FB／会員サイト）」（token `BUvSeMQTLAzP`）は消さずに残してある。**戻したい時はそちらを「デフォルトにする」に変えるだけ**
+- LINE内蔵ブラウザで開かれた場合は、カレンダーページ上部に「ブラウザで開いてください」の案内が自動表示される（それ以外の環境では非表示）
 
-レッスン本文のHTMLブロックに貼る。カレンダー・追加ボタン・iCal URL がまとめて入る。
+### 画像アップロードの注意（実地でハマった点）
+
+- LINEの仕様は **2500×843 または 2500×1686／1MB以下のJPG or PNG**。元のPNG（2162×727・1.7MB）はそのままでは通らない。`sips -z 843 2500` でリサイズ →`sips -s format jpeg -s formatOptions 80` でJPEG化して428KBに収めた
+- Chrome MCP の `file_upload` はセッション共有ファイルしか受け付けず今回は使えなかった。**画像をGitHub Pagesに置いて、ページ内JSで `fetch`→`File`→`DataTransfer`→`input.files` に流し込む方法で成功**（同じ場面ではこの手が使える）
+
+## 2. 会員サイト《 BOOSTER！応援共創ラボ 》 ← 2026-07-28 設置済み
+
+サイト `94TOLagXD3lw` ＞ コース「【はじめに】Boosterの歩き方」（`Hrc9moMmRPfv`）＞ レッスン「イベントスケジュール」（`fqsZUi2R3SZG`・**公開・即時開放**）
+
+- 種類は **コンテンツエディター** を使用。要素「**カスタムHTML**」に下記を入れている
+- **リッチテキストではiframeが除去される**（CKEditorが消す）ので、埋め込みたい場合はカスタムHTML一択
 
 ```html
 <div style="max-width:800px;margin:0 auto;">
   <iframe src="https://uyaisin.github.io/booster-calendar/"
           style="width:100%;height:1500px;border:0;"
           title="イベントスケジュール" loading="lazy"></iframe>
+  <p style="text-align:center;font-size:14px;">
+    <a href="https://uyaisin.github.io/booster-calendar/" target="_blank" rel="noopener">▶︎ カレンダーが表示されない場合はこちらから開く</a>
+  </p>
 </div>
 ```
 
-### 方式B: 方式Aでiframeが消される場合
-
-UTAGEのエディタがiframeをそぎ落とすことがある。その場合はボタンリンクに置き換える。
-
-```html
-<p style="text-align:center;">
-  <a href="https://uyaisin.github.io/booster-calendar/" target="_blank" rel="noopener"
-     style="display:inline-block;padding:14px 28px;border-radius:10px;
-            background:#c8622f;color:#fff;text-decoration:none;font-weight:600;">
-    イベントスケジュールを見る／カレンダーに追加する
-  </a>
-</p>
-```
-
-### 方式C: カレンダーだけを直接貼る場合
+### 参考: カレンダーだけを直接貼る場合
 
 ```html
 <iframe src="https://calendar.google.com/calendar/embed?src=info.ooenfes%40gmail.com&ctz=Asia%2FTokyo&mode=AGENDA&showTitle=0&showPrint=0&showCalendars=0&showTz=0"
