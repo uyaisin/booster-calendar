@@ -25,6 +25,10 @@
   }
   .wrap{max-width:760px;margin:0 auto;padding:20px 16px 56px;}
 
+  .kicker{
+    font-size:.78rem;font-weight:600;color:var(--accent);
+    letter-spacing:.06em;margin:0 0 4px;
+  }
   h1{font-size:1.32rem;margin:0 0 6px;letter-spacing:.02em;}
   .lead{font-size:.92rem;color:var(--sub);margin:0 0 20px;}
 
@@ -124,6 +128,7 @@
 <body>
 <div class="wrap">
 
+  <p class="kicker" id="kicker"></p>
   <h1 id="pageTitle">スケジュールカレンダー</h1>
   <p class="lead">今後の予定をまとめています。ご自分のカレンダーに追加しておくと、予定が増えたときに自動で反映されます。</p>
 
@@ -172,7 +177,8 @@
    ============================================================ */
 var CONFIG = {
   CALENDAR_ID : "info.ooenfes@gmail.com",
-  TITLE       : "《BOOSTER！応援共創ラボ》イベントスケジュール",
+  KICKER      : "《 BOOSTER！応援共創ラボ 》",
+  TITLE       : "イベントスケジュール",
   TIMEZONE    : "Asia/Tokyo",
   FOOTER      : "BOOSTER！応援共創ラボ"
 };
@@ -181,7 +187,8 @@ var CONFIG = {
   var id  = CONFIG.CALENDAR_ID;
   var enc = encodeURIComponent(id);
 
-  document.title = CONFIG.TITLE;
+  document.title = CONFIG.KICKER + CONFIG.TITLE;
+  document.getElementById("kicker").textContent = CONFIG.KICKER;
   document.getElementById("pageTitle").textContent = CONFIG.TITLE;
   document.getElementById("footer").textContent = CONFIG.FOOTER;
 
