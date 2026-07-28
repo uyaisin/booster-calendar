@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スケジュールカレンダー</title>
+<style>
+  :root{
+    --bg:#f7f5f1;
+    --card:#ffffff;
+    --ink:#2c2a27;
+    --sub:#6f6a63;
+    --line:#e5e0d8;
+    --accent:#c8622f;
+    --accent-soft:#fdf1e9;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+    line-height:1.75;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 56px;}
+
+  h1{font-size:1.32rem;margin:0 0 6px;letter-spacing:.02em;}
+  .lead{font-size:.92rem;color:var(--sub);margin:0 0 20px;}
+
+  .notice{
+    background:var(--accent-soft);
+    border:1px solid #f0d6c3;
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:.86rem;
+    color:#8a4a22;
+    margin:0 0 20px;
+  }
+  .notice b{font-weight:600;}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px;
+    margin:0 0 20px;
+  }
+  .card h2{
+    font-size:1rem;
+    margin:0 0 10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .card h2 span.num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:50%;
+    background:var(--accent);color:#fff;
+    font-size:.75rem;font-weight:700;flex:none;
+  }
+  .card p{font-size:.88rem;color:var(--sub);margin:0 0 12px;}
+
+  .calbox{
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    background:#fff;
+  }
+  .calbox iframe{display:block;width:100%;min-width:330px;height:600px;border:0;}
+  @media (max-width:600px){
+    .calbox iframe{height:480px;}
+  }
+
+  .btn{
+    display:block;
+    text-align:center;
+    text-decoration:none;
+    font-weight:600;
+    font-size:.95rem;
+    padding:14px 16px;
+    border-radius:10px;
+    background:var(--accent);
+    color:#fff;
+  }
+  .btn.sub{
+    background:#fff;
+    color:var(--accent);
+    border:1.5px solid var(--accent);
+    margin-top:10px;
+    font-size:.9rem;
+  }
+
+  .ics{
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:.74rem;
+    background:#f4f2ee;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px;
+    word-break:break-all;
+    color:#54504a;
+    margin:0 0 10px;
+  }
+  .copybtn{
+    display:inline-block;
+    font-size:.82rem;
+    padding:8px 14px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .copybtn.done{border-color:var(--accent);color:var(--accent);}
+
+  details{margin-top:12px;font-size:.86rem;}
+  details summary{cursor:pointer;color:var(--accent);}
+  details ol{padding-left:1.2em;margin:8px 0 0;color:var(--sub);}
+  details li{margin-bottom:4px;}
+
+  footer{font-size:.78rem;color:#9b958c;text-align:center;margin-top:32px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1 id="pageTitle">スケジュールカレンダー</h1>
+  <p class="lead">今後の予定をまとめています。ご自分のカレンダーに追加しておくと、予定が増えたときに自動で反映されます。</p>
+
+  <div class="notice" id="lineNotice">
+    <b>LINEから開いた方へ：</b>画面右上の「…」から<b>「他のアプリで開く」／「ブラウザで開く」</b>を選んでください。そのままだとカレンダーの追加がうまくいかない場合があります。
+  </div>
+
+  <div class="card">
+    <h2><span class="num">1</span>予定を見る</h2>
+    <div class="calbox">
+      <iframe id="calFrame" src="" title="スケジュールカレンダー" loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">2</span>自分のカレンダーに追加する</h2>
+    <p>Googleカレンダーをお使いの方は、こちらから追加できます。</p>
+    <a class="btn" id="addGoogle" href="#" target="_blank" rel="noopener">Googleカレンダーに追加する</a>
+    <a class="btn sub" id="openGoogle" href="#" target="_blank" rel="noopener">Googleカレンダーで開く</a>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">3</span>iPhone・Outlookをお使いの方</h2>
+    <p>下のURLを「照会するカレンダー」として登録してください。</p>
+    <div class="ics" id="icsUrl"></div>
+    <button class="copybtn" id="copyBtn" type="button">URLをコピー</button>
+
+    <details>
+      <summary>登録のしかた（iPhone / Outlook）</summary>
+      <ol>
+        <li><b>iPhone：</b>「設定」→「アプリ」→「カレンダー」→「アカウント」→「アカウントを追加」→「その他」→「照会するカレンダーを追加」に上のURLを貼る</li>
+        <li><b>Outlook：</b>カレンダー画面の「カレンダーの追加」→「Webから定期受信」に上のURLを貼る</li>
+      </ol>
+    </details>
+  </div>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+/* ============================================================
+   ここだけ書き換えれば使えます
+   CALENDAR_ID : Googleカレンダー設定 →「カレンダーの統合」の
+                 「カレンダー ID」をそのまま貼る
+                 例) abc123@group.calendar.google.com
+   ============================================================ */
+var CONFIG = {
+  CALENDAR_ID : "info.ooenfes@gmail.com",
+  TITLE       : "《BOOSTER！応援共創ラボ》イベントスケジュール",
+  TIMEZONE    : "Asia/Tokyo",
+  FOOTER      : "BOOSTER！応援共創ラボ"
+};
+
+(function(){
+  var id  = CONFIG.CALENDAR_ID;
+  var enc = encodeURIComponent(id);
+
+  document.title = CONFIG.TITLE;
+  document.getElementById("pageTitle").textContent = CONFIG.TITLE;
+  document.getElementById("footer").textContent = CONFIG.FOOTER;
+
+  var embed = "https://calendar.google.com/calendar/embed"
+    + "?src=" + enc
+    + "&ctz=" + encodeURIComponent(CONFIG.TIMEZONE)
+    + "&mode=AGENDA&showTitle=0&showPrint=0&showTabs=1&showCalendars=0&showTz=0";
+
+  document.getElementById("calFrame").src = embed;
+  document.getElementById("openGoogle").href = embed;
+  document.getElementById("addGoogle").href =
+    "https://calendar.google.com/calendar/render?cid=" + enc;
+
+  var ics = "https://calendar.google.com/calendar/ical/" + enc + "/public/basic.ics";
+  document.getElementById("icsUrl").textContent = ics;
+
+  var btn = document.getElementById("copyBtn");
+  btn.addEventListener("click", function(){
+    var done = function(){
+      btn.textContent = "コピーしました";
+      btn.classList.add("done");
+      setTimeout(function(){
+        btn.textContent = "URLをコピー";
+        btn.classList.remove("done");
+      }, 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ics).then(done, function(){});
+    } else {
+      var t = document.createElement("textarea");
+      t.value = ics; document.body.appendChild(t); t.select();
+      try { document.execCommand("copy"); done(); } catch(e){}
+      document.body.removeChild(t);
+    }
+  });
+
+  /* LINE内蔵ブラウザ以外では上の注意書きを隠す */
+  if (navigator.userAgent.indexOf("Line") === -1) {
+    document.getElementById("lineNotice").style.display = "none";
+  }
+})();
+</script>
+</body>
+</html>
